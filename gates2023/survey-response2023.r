@@ -30,7 +30,7 @@ answer_2 <- "Open during daytime"
 
 results <-
     c(
-        rep(answer_1, 57),
+        rep(answer_1, 58),
         rep(answer_2, 48)
     )
 
