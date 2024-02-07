@@ -7,7 +7,9 @@ theme_set(
         axis.title = element_blank(),
         panel.grid.minor = element_blank(),
         legend.position = "none",
-        plot.title.position = "plot"
+        plot.title.position = "plot",
+        plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0)
     )
 )
 
@@ -55,7 +57,8 @@ p <-
     plot_layout(ncol = 1) + 
     plot_annotation(
         title = title,
-        subtitle = subtitle
+        subtitle = subtitle, 
+        caption = glue::glue("Date of reporting: ", format(today(), format = "%b %d, %Y"))
     )
 
 ggsave("evoting2024/evoting_results.png",
