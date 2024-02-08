@@ -49,12 +49,11 @@ subtitle <- glue::glue(
     "Total response: {total}"
 )
 
-
 p <-
     display_results(q1res, question = q1) +
     display_results(q3res, question = q3) +
     display_results(q4res, question = q4) +
-    plot_layout(ncol = 1) + 
+    plot_layout(ncol = 1, heights = c(2,4,5)) + 
     plot_annotation(
         title = title,
         subtitle = subtitle, 
