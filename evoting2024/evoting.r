@@ -2,33 +2,34 @@ library(tidyverse)
 library(patchwork)
 
 theme_set(
-    theme_light() + 
-    theme(
-        axis.title = element_blank(),
-        panel.grid.minor = element_blank(),
-        legend.position = "none",
-        plot.title.position = "plot",
-        plot.caption.position = "plot",
-        plot.caption = element_text(hjust = 0)
-    )
+    theme_light() +
+        theme(
+            axis.title = element_blank(),
+            panel.grid.minor = element_blank(),
+            legend.position = "none",
+            plot.title.position = "plot",
+            plot.caption.position = "plot",
+            plot.caption = element_text(hjust = 0)
+        )
 )
 
 
 display_results <- function(dat, question) {
     dat %>%
-    mutate(vote = Count / sum(Count)) %>%
-    ggplot(aes(x = vote, y = Answer)) + 
-    geom_col() + 
-    scale_x_continuous(
-        limits = c(0, 1),
-        labels = scales::label_percent()
-    ) +
-    labs(x = "", y = "",
-        title = question) + 
-    theme(
-        axis.title = element_blank()
-    )
-
+        mutate(vote = Count / sum(Count)) %>%
+        ggplot(aes(x = vote, y = Answer)) +
+        geom_col() +
+        scale_x_continuous(
+            limits = c(0, 1),
+            labels = scales::label_percent()
+        ) +
+        labs(
+            x = "", y = "",
+            title = question
+        ) +
+        theme(
+            axis.title = element_blank()
+        )
 }
 
 q1 <- "Did you vote by paper ballot this year (2024)?"
@@ -53,14 +54,15 @@ p <-
     display_results(q1res, question = q1) +
     display_results(q3res, question = q3) +
     display_results(q4res, question = q4) +
-    plot_layout(ncol = 1, heights = c(2,4,5)) + 
+    plot_layout(ncol = 1, heights = c(2, 4, 5)) +
     plot_annotation(
         title = title,
-        subtitle = subtitle, 
+        subtitle = subtitle,
         caption = glue::glue("Date of reporting: ", format(today(), format = "%b %d, %Y"))
     )
 
 ggsave("evoting2024/evoting_results.png",
-    # width = 6,
-    # height = 10,
-    plot = p)
+    width = 10,
+    height = 8,
+    plot = p
+)

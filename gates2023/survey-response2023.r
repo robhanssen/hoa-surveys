@@ -97,10 +97,12 @@ set.seed(20231001)
 mns <-
     map_dbl(
         seq_len(10000),
-        ~ mean(sample(results,
-            length(results),
-            replace = TRUE
-        ) == "Closed 24/7")
+        ~ mean(
+            sample(results,
+                length(results),
+                replace = TRUE
+            ) == "Closed 24/7"
+        )
     )
 
 bounds <-
