@@ -18,6 +18,8 @@ theme_set(
 
 datafiles <- list.files(path = "./budget2025/source", pattern = "*.csv$", full.names = TRUE)
 
+default_fee <- 800
+
 lvls <- c(
     "$100 lower than FY2024",
     "$50 lower than FY2024",
@@ -37,7 +39,7 @@ fee_question <-
             Answer == lvls[5] ~ Count - 1,
             TRUE ~ Count
         ),
-        diff = c(-100, -50, 0, 50, 100)
+        diff = default_fee + c(-100, -50, 0, 50, 100)
     )
 
 mean_fee_change <- weighted.mean(fee_question$diff, fee_question$Count)
@@ -48,22 +50,25 @@ fee_question %>%
     ggplot(
         aes(x = diff, y = Count)
     ) +
-    geom_point(size = 3, shape = 1) +
+    geom_point(size = 3, shape = 19, color = glcolors$green) +
     geom_segment(
         aes(x = diff, xend = diff, y = Count, yend = 0),
-        linewidth = 2, alpha = .5, color = "darkgreen"
+        linewidth = 2, alpha = .5, color = glcolors$green
     ) +
     annotate("text",
         x = mean_fee_change + 5, y = label_height, hjust = 0,
-        label = glue::glue("Average:\n{scales::dollar(mean_fee_change)}")
+        label = glue::glue("Average (weighed):\n{scales::dollar(mean_fee_change)}")
     ) +
-    geom_vline(xintercept = mean_fee_change, linewidth = 3, alpha = .25, color = "tan") +
+    geom_vline(xintercept = mean_fee_change, linewidth = 3, alpha = .25, color = glcolors$tan) +
     labs(
-        x = "Desired fee change (in US$)",
-        Y = ""
+        x = "Desired fee (in US$)",
+        y = ""
     ) +
     scale_y_continuous(
-        breaks = seq(0, 400, 5)
+        breaks = scales::breaks_pretty()
+    ) +
+    scale_x_continuous(
+        breaks = scales::breaks_pretty()
     )
 
 open_questions <-
