@@ -42,7 +42,10 @@ fee_question <-
         diff = default_fee + c(-100, -50, 0, 50, 100)
     )
 
+
+
 mean_fee_change <- weighted.mean(fee_question$diff, fee_question$Count)
+errbars <- mean(d) + qt(c(0.05, 0.95), df = length(d) - 1) * sd(d) / sqrt(n)
 
 label_height <- max(fee_question$Count)
 
@@ -58,6 +61,11 @@ fee_question %>%
     annotate("text",
         x = mean_fee_change + 5, y = label_height, hjust = 0,
         label = glue::glue("Average (weighed):\n{scales::dollar(mean_fee_change)}")
+    ) +
+    geom_segment(
+        aes(x = errbars[1], xend = errbars[2], y = 0, yend = 0),
+        inherit.aes = FALSE,
+        color = glcolors$tan, linewidth = 3, alpha = .25
     ) +
     geom_vline(xintercept = mean_fee_change, linewidth = 3, alpha = .25, color = glcolors$tan) +
     labs(
