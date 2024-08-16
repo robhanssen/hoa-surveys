@@ -42,10 +42,10 @@ fee_question <-
         diff = default_fee + c(-100, -50, 0, 50, 100)
     )
 
-
+d <- rep(fee_question$diff, fee_question$Count)
 
 mean_fee_change <- weighted.mean(fee_question$diff, fee_question$Count)
-errbars <- mean(d) + qt(c(0.05, 0.95), df = length(d) - 1) * sd(d) / sqrt(n)
+errbars <- mean(d) + qt(c(0.05, 0.95), df = length(d) - 1) * sd(d) / sqrt(length(d))
 
 label_height <- max(fee_question$Count)
 
@@ -59,12 +59,12 @@ fee_question %>%
         linewidth = 2, alpha = .5, color = glcolors$green
     ) +
     annotate("text",
-        x = mean_fee_change + 5, y = label_height, hjust = 0,
+        x = mean_fee_change - 5, y = label_height, hjust = 1,
         label = glue::glue("Average (weighed):\n{scales::dollar(mean_fee_change)}")
     ) +
     geom_segment(
-        aes(x = errbars[1], xend = errbars[2], y = 0, yend = 0),
         inherit.aes = FALSE,
+        aes(x = errbars[1], xend = errbars[2], y = 0, yend = 0),
         color = glcolors$tan, linewidth = 3, alpha = .25
     ) +
     geom_vline(xintercept = mean_fee_change, linewidth = 3, alpha = .25, color = glcolors$tan) +
@@ -81,12 +81,14 @@ fee_question %>%
 
 open_questions <-
     map_df(datafiles, read_csv, .id = "file") %>%
-    filter(!str_detect(Answer, "testing"))
+    filter(!str_detect(Answer, "testing")) %>%
+    mutate(file = as.numeric(file))
 
 
 words1_3 <-
     open_questions %>%
     filter(file %in% c(1:3)) %>%
+    slice(rep(seq_len(n()), times = (3 - file + 1))) %>%
     select(Answer) %>%
     unnest_tokens(word, Answer) %>%
     count(word, sort = TRUE) %>%
@@ -102,6 +104,7 @@ wordcloud2(
 words5_6 <-
     open_questions %>%
     filter(file %in% c(5:6)) %>%
+    slice(rep(seq_len(n()), times = (6 - file + 1))) %>%
     select(Answer) %>%
     unnest_tokens(word, Answer) %>%
     count(word, sort = TRUE) %>%
