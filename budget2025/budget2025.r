@@ -16,7 +16,7 @@ theme_set(
         )
 )
 
-datafiles <- list.files(path = "./budget2025/source", pattern = "*.csv$", full.names = TRUE)
+datafiles <- list.files(path = "./budget2025/source", pattern = "^quest.*csv$", full.names = TRUE)
 
 default_fee <- 800
 
@@ -79,6 +79,8 @@ fee_question %>%
         breaks = scales::breaks_pretty()
     )
 
+ggsave("budget2025/fee_question.png", width = 6, height = 4)
+
 open_questions <-
     map_df(datafiles, read_csv, .id = "file") %>%
     filter(!str_detect(Answer, "testing")) %>%
@@ -114,4 +116,30 @@ set.seed(12354) # for reproducibility
 
 wordcloud2(
     data = words5_6, size = 1.3
+)
+
+
+# log tracking
+
+log <- read_csv("budget2025/source/activities.csv", show_col_types = FALSE) %>%
+    filter(str_detect(Action, "Survey response given"), Date > "2024-08-01") %>%
+    arrange(Date) %>%
+    # remove the first entry: test user
+    slice(-1) %>%
+    mutate(x = 1, count = cumsum(x))
+
+log %>%
+    ggplot(
+        aes(x = Date, y = count)
+    ) +
+    geom_point() +
+    geom_line() +
+    labs(
+        x = "",
+        y = "Cumulative survey responses",
+        title = "Budget 2025 survey response count"
+    )
+
+ggsave("budget2025/survey_count.png",
+    width = 6, height = 4
 )
