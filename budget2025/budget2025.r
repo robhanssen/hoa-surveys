@@ -126,14 +126,24 @@ log <- read_csv("budget2025/source/activities.csv", show_col_types = FALSE) %>%
     arrange(Date) %>%
     # remove the first entry: test user
     slice(-1) %>%
-    mutate(x = 1, count = cumsum(x))
+    mutate(x = 1, count = cumsum(x), in_data = TRUE) %>%
+    bind_rows(tibble(Date = now(), count = nrow(.), in_data = FALSE))
 
 log %>%
     ggplot(
-        aes(x = Date, y = count)
+        aes(x = Date, y = count, shape = in_data, linetype = in_data)
+    ) +
+    scale_x_datetime(
+        date_breaks = "1 day",
+        date_labels = "%b %d"
+    ) +
+    scale_y_continuous(
+        limits = c(0, NA)
     ) +
     geom_point() +
-    geom_line() +
+    scale_shape_manual(values = c("TRUE" = 19, "FALSE" = 1)) +
+    geom_line(color = "gray50", alpha = .5) +
+    scale_linetype_manual(values = c("TRUE" = 1, "FALSE" = 1)) +
     labs(
         x = "",
         y = "Cumulative survey responses",
